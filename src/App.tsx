@@ -2,6 +2,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './pages/Home';
 import MealDetail from './pages/MealDetail';
+import Categories from './pages/Categories';
+import CategoryDetail from './pages/CategoryDetail';
+import RandomMeal from './pages/RandomMeal';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -12,6 +16,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/meal/:id" element={<MealDetail />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/category/:category" element={<CategoryDetail />} />
+            <Route path="/random" element={<RandomMeal />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </div>
