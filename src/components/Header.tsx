@@ -71,7 +71,7 @@ export default function Header({ onSearch }: HeaderProps) {
               <Heart className="w-4 h-4" />
               <span>Favorites</span>
               {favoritesCount > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full p-2 min-w-[20px] flex items-center justify-center">
+                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-2 min-w-[20px] flex items-center justify-center">
                   {favoritesCount}
                 </span>
               )}
