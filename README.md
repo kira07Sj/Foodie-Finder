@@ -116,7 +116,7 @@ The application uses TheMealDB API with the following endpoints:
 
 ## 🎯 Future Enhancements
 
-- [ ] Implement category browsing
+
 - [ ] Add meal filtering by area/country
 - [ ] Implement advanced search filters
 - [ ] Add meal rating and reviews
