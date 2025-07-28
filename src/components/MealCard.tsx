@@ -1,17 +1,54 @@
-import { MapPin, ChefHat } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MapPin, ChefHat, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Meal } from '../services/mealApi';
+import { favoritesService } from '../services/favoritesService';
 
 interface MealCardProps {
   meal: Meal;
+  showFavoriteButton?: boolean;
 }
 
-export default function MealCard({ meal }: MealCardProps) {
+export default function MealCard({ meal, showFavoriteButton = true }: MealCardProps) {
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    setIsFavorite(favoritesService.isFavorite(meal.idMeal));
+  }, [meal.idMeal]);
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation when clicking the heart button
+    e.stopPropagation();
+    
+    if (isFavorite) {
+      favoritesService.removeFromFavorites(meal.idMeal);
+      setIsFavorite(false);
+    } else {
+      favoritesService.addToFavorites(meal);
+      setIsFavorite(true);
+    }
+  };
+
   return (
     <Link 
       to={`/meal/${meal.idMeal}`}
-      className="card p-4 h-full flex flex-col group hover:scale-105 transition-transform duration-200"
+      className="card p-4 h-full flex flex-col group hover:scale-105 transition-transform duration-200 relative"
     >
+      {/* Favorite Button */}
+      {showFavoriteButton && (
+        <button
+          onClick={toggleFavorite}
+          className="absolute top-2 right-2 z-10 bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full shadow-lg transition-all duration-200"
+          title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+        >
+          <Heart 
+            className={`w-4 h-4 transition-colors duration-200 ${
+              isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-400 hover:text-red-500'
+            }`} 
+          />
+        </button>
+      )}
+
       {/* Meal Image */}
       <div className="relative mb-4 overflow-hidden rounded-lg">
         <img

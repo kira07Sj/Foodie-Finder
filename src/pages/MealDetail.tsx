@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Loader2, AlertCircle, ArrowLeft, MapPin, ChefHat, Play, ExternalLink } from 'lucide-react';
+import { Loader2, AlertCircle, ArrowLeft, MapPin, ChefHat, Play, ExternalLink, Heart } from 'lucide-react';
 import { mealApi, type Meal } from '../services/mealApi';
+import { favoritesService } from '../services/favoritesService';
 
 export default function MealDetail() {
   const { id } = useParams<{ id: string }>();
   const [meal, setMeal] = useState<Meal | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const fetchMeal = async () => {
@@ -19,6 +21,9 @@ export default function MealDetail() {
       try {
         const mealData = await mealApi.getMealById(id);
         setMeal(mealData);
+        if (mealData) {
+          setIsFavorite(favoritesService.isFavorite(mealData.idMeal));
+        }
       } catch (err) {
         setError('Failed to load meal details. Please try again.');
         console.error('Meal detail error:', err);
@@ -29,6 +34,18 @@ export default function MealDetail() {
 
     fetchMeal();
   }, [id]);
+
+  const toggleFavorite = () => {
+    if (!meal) return;
+    
+    if (isFavorite) {
+      favoritesService.removeFromFavorites(meal.idMeal);
+      setIsFavorite(false);
+    } else {
+      favoritesService.addToFavorites(meal);
+      setIsFavorite(true);
+    }
+  };
 
   const getIngredients = (meal: Meal) => {
     const ingredients = [];
@@ -103,12 +120,25 @@ export default function MealDetail() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
           <div className="md:flex">
             {/* Meal Image */}
-            <div className="md:w-1/2">
+            <div className="md:w-1/2 relative">
               <img
                 src={meal.strMealThumb}
                 alt={meal.strMeal}
                 className="w-full h-64 md:h-full object-cover"
               />
+              
+              {/* Favorite Button */}
+              <button
+                onClick={toggleFavorite}
+                className="absolute top-4 right-4 bg-white bg-opacity-90 hover:bg-opacity-100 p-3 rounded-full shadow-lg transition-all duration-200"
+                title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              >
+                <Heart 
+                  className={`w-5 h-5 transition-colors duration-200 ${
+                    isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-400 hover:text-red-500'
+                  }`} 
+                />
+              </button>
             </div>
 
             {/* Meal Info */}
@@ -135,19 +165,33 @@ export default function MealDetail() {
                 )}
               </div>
 
-              {/* YouTube Video Link */}
-              {meal.strYoutube && (
-                <a
-                  href={meal.strYoutube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-2 btn-primary"
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                {meal.strYoutube && (
+                  <a
+                    href={meal.strYoutube}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary inline-flex items-center space-x-2"
+                  >
+                    <Play className="w-4 h-4" />
+                    <span>Watch on YouTube</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )}
+                
+                <button
+                  onClick={toggleFavorite}
+                  className={`inline-flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                    isFavorite 
+                      ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
                 >
-                  <Play className="w-4 h-4" />
-                  <span>Watch on YouTube</span>
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              )}
+                  <Heart className={`w-4 h-4 ${isFavorite ? 'fill-red-500' : ''}`} />
+                  <span>{isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

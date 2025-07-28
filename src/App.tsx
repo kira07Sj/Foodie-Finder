@@ -5,6 +5,7 @@ import MealDetail from './pages/MealDetail';
 import Categories from './pages/Categories';
 import CategoryDetail from './pages/CategoryDetail';
 import RandomMeal from './pages/RandomMeal';
+import Favorites from './pages/Favorites';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path="/categories" element={<Categories />} />
             <Route path="/category/:category" element={<CategoryDetail />} />
             <Route path="/random" element={<RandomMeal />} />
+            <Route path="/favorites" element={<Favorites />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

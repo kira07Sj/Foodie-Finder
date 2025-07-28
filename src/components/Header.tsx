@@ -1,11 +1,34 @@
-import { Search, UtensilsCrossed } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, UtensilsCrossed, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { favoritesService } from '../services/favoritesService';
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
 }
 
 export default function Header({ onSearch }: HeaderProps) {
+  const [favoritesCount, setFavoritesCount] = useState(0);
+
+  useEffect(() => {
+    // Update favorites count on mount and when it changes
+    const updateFavoritesCount = () => {
+      setFavoritesCount(favoritesService.getFavoritesCount());
+    };
+
+    updateFavoritesCount();
+
+    // Listen for storage changes (when favorites are updated in other tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'foodie-finder-favorites') {
+        updateFavoritesCount();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,6 +63,18 @@ export default function Header({ onSearch }: HeaderProps) {
               className="text-gray-700 hover:text-primary-600 font-medium transition-colors duration-200"
             >
               Random Meal
+            </Link>
+            <Link 
+              to="/favorites" 
+              className="text-gray-700 hover:text-primary-600 font-medium transition-colors duration-200 flex items-center space-x-1"
+            >
+              <Heart className="w-4 h-4" />
+              <span>Favorites</span>
+              {favoritesCount > 0 && (
+                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] flex items-center justify-center">
+                  {favoritesCount}
+                </span>
+              )}
             </Link>
           </nav>
 
