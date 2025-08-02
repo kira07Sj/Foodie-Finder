@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Search, UtensilsCrossed, Heart, Menu, X } from 'lucide-react';
+import { UtensilsCrossed, Heart, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { favoritesService } from '../services/favoritesService';
 
-interface HeaderProps {
-  onSearch?: (query: string) => void;
-}
-
-export default function Header({ onSearch }: HeaderProps) {
+export default function Header() {
   const [favoritesCount, setFavoritesCount] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
